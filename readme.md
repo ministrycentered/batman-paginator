@@ -8,6 +8,8 @@ A paginator for `Batman.Model`s that use `Batman.RestStorage`. It provides:
 - "Text search" by searching records in memory and firing a request to the server with the query
 - Page prefetching so nobody has to wait!
 
+Also, a full test suite in `spec/`.
+
 # Usage
 
 ## Include it in your project
@@ -37,7 +39,7 @@ GET "#{model.url}#{.json if needed}?offset=#{offset}&limit=#{limit}&#{serialized
 ```
 And it expects a response like this one:
 
-```json
+```javascript
 {
   "total" : 35
   "records" : [
@@ -75,12 +77,15 @@ You wrap your HTML in a `PaginatorView`:
 ```slim
 div data-view='PaginatorView'
   h4 People
+
+  / optional search:
   input type='text' data-bind='searchTerm'
 
+  /show the items:
   ul
     li data-foreach-person="items"
       a data-route='routes.people[person]'
-        span.name data-bind="checkin.name"
+        span.name data-bind="person.name"
 
   / When an AJAX request is out:
   p data-showif='isLoading' Loading more results...
@@ -101,33 +106,35 @@ div data-view='PaginatorView'
 
 # `new Batman.Paginator` Arguments
 
-## `model` : Model
+### `model` : Model
 
 The `Batman.Model` subclass being paginated. `model.url` must be defined.
 
-## `index` : SetSort
+### `index` : SetSort
 
 The index where the paginator will find already-loaded records. Defaults to `model.get('loaded').sortedBy('id')`. Pass a `Batman.SetSort` to make sure the client paginator sorts things the same way the server sorts them.
 
-## `limit` : Integer
+For example, for a paginator sorting by `score`, send `index: App.Player.get('loaded').sortedBy('score')`
+
+### `limit` : Integer
 
 Items per page. Sent to the server as `limit`. Default `10`.
 
-## `offset`: Integer
+### `offset`: Integer
 
 Initial offset (for starting at a page other than 0). Default `0`.
 
-## `searchBy`: Array
+### `searchBy`: Array of Strings
 
 If you include property names as `searchBy` when instantiating a paginator, it will filter itself by seeing if any of the `searchBy` properties begin with `searchTerm`.
 
 It will also fire a request with the search term as `Batman.Paginator.SEARCH_TERM_PARAM` (default value `q`) in the query params.
 
-## `queryParams` : Object
+### `queryParams` : Object
 
 A JS Object containing `param: "value"` pairs. They will be serialized in the paginator's AJAX requests. This is a nice place for `{order: "name asc"}`, for example. Defaults to `{}`.
 
-## `prefetch`
+### `prefetch`
 
 If true, the paginator will fetch the _next_ page whenever a new page is displayed. For exampele, going to page 2 will cause the paginator to load page 3. Defaults to `false`.
 
