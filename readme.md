@@ -134,7 +134,7 @@ It will also fire a request with the search term as `Batman.Paginator.SEARCH_TER
 
 A JS Object containing `param: "value"` pairs. They will be serialized in the paginator's AJAX requests. This is a nice place for `{order: "name asc"}`, for example. Defaults to `{}`.
 
-### `prefetch`
+### `prefetch` : Boolean
 
 If true, the paginator will fetch the _next_ page whenever a new page is displayed. For exampele, going to page 2 will cause the paginator to load page 3. Defaults to `false`.
 
