@@ -4,11 +4,11 @@ class Batman.Paginator extends Batman.Object
   # Make a new paginator
   #
   # @param [Object] options The options for the new Paginator
-  # @option [Class] model
-  # @option [Integer] limit
-  # @option [Integer] offset
-  # @option [Boolean] prefetch
-  # @option [Batman.SetSort] index
+  # @option options [Class] model
+  # @option options [Integer] limit
+  # @option options [Integer] offset
+  # @option options [Boolean] prefetch
+  # @option options [Batman.SetSort] index
   constructor: (options={}) ->
     defaults =
       limit: 10
@@ -32,6 +32,7 @@ class Batman.Paginator extends Batman.Object
     url = Batman.Navigator.normalizePath("/", url) # make it absolute
     url
 
+  # @property [String]
   @accessor 'requestURL', ->
     queryString = "offset=#{@get('offset')}&limit=#{@get('limit')}"
     @get('queryParams').forEach (key, value) ->
@@ -39,6 +40,9 @@ class Batman.Paginator extends Batman.Object
     if @get('searchTerm')
       queryString += "&#{@constructor.SEARCH_TERM_PARAM}=#{@get('searchTerm')}"
     queryUrl = "#{@get('modelURL')}?#{queryString}"
+
+  # @property [Integer] number
+  @property 'number'
 
   @accessor 'searchRegExp', -> new RegExp("(^| )#{@get('searchTerm').replace(' ', '.* ')}", 'i')
 

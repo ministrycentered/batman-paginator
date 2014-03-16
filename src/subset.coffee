@@ -1,6 +1,8 @@
 # - returns a section of a Batman.SetSort from <offset> for <limit>
 # - Batman-y: bound to its @base, maintains its view bindings
-# new Batman.SubSet(someBatmanSet.sortedBy('created_at'), {offset, limit})
+# @example New subset
+#   new Batman.SubSet(someBatmanSet.sortedBy('created_at'), {offset, limit})
+#
 class Batman.SubSet extends Batman.SetProxy
   constructor: (base, {offset, limit}={}) ->
     super(base)

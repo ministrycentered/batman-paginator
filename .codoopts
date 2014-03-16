@@ -2,7 +2,6 @@
 --readme     readme.md
 --title      "Batman.Paginator API Documentation"
 --verbose
---undocumented
 --extension  coffee
 --output     ./doc
 ./src
