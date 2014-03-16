@@ -3,8 +3,9 @@ module.exports = (config) ->
     basePath: "../"
     frameworks: ['jasmine']
     files: [
-      '../dist/batman.paginator.coffee'
       'lib/batman.js'
+      '../dist/batman.paginator.js'
+      '../spec/support/batman_request_mocks.coffee'
       '**/*_spec.coffee'
     ]
     exclude: []

@@ -10,7 +10,7 @@
   ],
   "license" : "MIT",
   "devDependencies": {
-    "karma": ">= 0.10",
+    "karma": "0.10.9",
     "coffee-script" : ">= 1.6.3",
     "uglify-js" : ">= 2.4"
   },
