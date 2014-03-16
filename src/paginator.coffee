@@ -1,12 +1,14 @@
 class Batman.Paginator extends Batman.Object
   @SEARCH_TERM_PARAM = "q"
-  _STATES:
-    LOADING: "loading"
-    READY: "ready"
 
-  @_requestCache: {}
-  @clearRequestCache: -> @_requestCache = {}
-
+  # Make a new paginator
+  #
+  # @param [Object] options The options for the new Paginator
+  # @option [Class] model
+  # @option [Integer] limit
+  # @option [Integer] offset
+  # @option [Boolean] prefetch
+  # @option [Batman.SetSort] index
   constructor: (options={}) ->
     defaults =
       limit: 10
@@ -22,6 +24,7 @@ class Batman.Paginator extends Batman.Object
   @::observe 'requestURL', ->
     @_loadRecords()
 
+  # @property [String]  `model.url`, normalized by adding a leading `/` and a trailing `.json`, if necessary
   @accessor 'modelURL', ->
     url = @get('model.url')
     if url.indexOf(".json") is -1
@@ -129,3 +132,12 @@ class Batman.Paginator extends Batman.Object
     if !@get('firstPage')
       @set('offset', @get('offset') - @get('limit'))
       @resultSubSet.set('offset', @get('offset'))
+
+  _STATES:
+    LOADING: "loading"
+    READY: "ready"
+
+  # @property [Object] requests already made by any paginator, in `url: totalResults` pairs.
+  @_requestCache: {}
+  @clearRequestCache: -> @_requestCache = {}
+
