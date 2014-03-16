@@ -54,7 +54,7 @@ Also, if you use `searchTerm`, it will be sent to the server as `?q=your%20searc
 
 ## Use a paginator in the controller
 
-```
+```coffeescript
 class App.PeopleController extends App.ApplicationController
   index: (params) ->
     @set 'paginator', new Batman.Paginator      # make sure `controller.paginator` is set!
