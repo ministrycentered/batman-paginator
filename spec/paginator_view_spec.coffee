@@ -1,4 +1,9 @@
+
 describe 'Batman.Paginator.View', ->
-  it 'is found on window', ->
+  beforeEach ->
+    Batman.currentApp = Batman.App
+
+  it 'is accessible as PaginatorView', ->
     view = new Batman.View
-    expect(view.lookupKeypath("Batman.Paginator.View")).toBe(Batman.Paginator.View)
+    expect(view.lookupKeypath("PaginatorView")).toBeDefined()
+    expect(view.lookupKeypath("PaginatorView")).toBe(Batman.Paginator.View)

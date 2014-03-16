@@ -245,6 +245,73 @@
 
   })(Batman.Object);
 
+  Batman.Paginator.View = (function(_super) {
+    __extends(View, _super);
+
+    function View() {
+      return View.__super__.constructor.apply(this, arguments);
+    }
+
+    View.accessor('paginator', function() {
+      return this.get('controller.paginator');
+    });
+
+    View.accessor('searchTerm', {
+      get: function() {
+        return this.get('paginator.searchTerm');
+      },
+      set: function(key, value) {
+        this._lastValue = value;
+        return setTimeout((function(_this) {
+          return function() {
+            if (_this._lastValue === value) {
+              return _this.set('paginator.searchTerm', value);
+            }
+          };
+        })(this), 200);
+      }
+    });
+
+    ['currentPage', 'totalPages', 'total', 'firstPage', 'lastPage'].forEach(function(prop) {
+      return View.accessor(prop, function() {
+        return this.get('paginator').get(prop);
+      });
+    });
+
+    View.prototype.next = function() {
+      return this.get('paginator').next();
+    };
+
+    View.prototype.prev = function() {
+      return this.get('paginator').prev();
+    };
+
+    View.accessor('items', function() {
+      return this.get('paginator.results');
+    });
+
+    View.accessor('isLoading', function() {
+      if (this.get('paginator.isLoading') === void 0) {
+        return true;
+      } else {
+        return this.get('paginator.isLoading');
+      }
+    });
+
+    View.accessor('noItemsAtAll', function() {
+      return !this.get('searchTerm') && !this.get('isLoading') && this.get('totalPages') === 0;
+    });
+
+    View.accessor('noSearchResults', function() {
+      return !!this.get('searchTerm') && !this.get('isLoading') && this.get('totalPages') === 0;
+    });
+
+    return View;
+
+  })(Batman.View);
+
+  Batman.App.PaginatorView = Batman.Paginator.View;
+
   Batman.SubSet = (function(_super) {
     __extends(SubSet, _super);
 

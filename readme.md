@@ -8,8 +8,6 @@ A paginator for `Batman.Model`s that use `Batman.RestStorage`. It provides:
 - "Text search" by searching records in memory and firing a request to the server with the query
 - Page prefetching so nobody has to wait!
 
-Developed at [Planning Center Online](http://get.planningcenteronline.com/)
-
 # Usage
 
 ## Include it in your project
@@ -59,12 +57,14 @@ class App.PeopleController extends App.ApplicationController
     @set('people', @get('paginator.results'))
 ```
 
+`PaginatorView` below looks for `@controller.get('paginator')`, so make sure to define that if you're using `PaginatorView`.
+
 ## Control the Paginator from the view:
 
-You wrap your HTML in a `Batman.Paginator.View`:
+You wrap your HTML in a `PaginatorView`:
 
 ```slim
-div data-view='Batman.Paginator.View'
+div data-view='PaginatorView'
   h4 People
   input type='text' data-bind='searchTerm'
 
@@ -90,3 +90,18 @@ div data-view='Batman.Paginator.View'
       | Next >
 ```
 
+# More info
+
+### `searchBy`
+
+If you include property names as `searchBy` when instantiating a paginator, it will filter itself by seeing if any of the `searchBy` properties begin with `searchTerm`. It will also fire a request with the search term as `q` in the query params.
+
+
+# To Do
+
+- Proper API Docs
+- Extract `RestPaginator` and `MemoryPaginator`
+
+# Contributing
+
+Please do! We're (about to start) running this in production, so please report any issues and open a pull request if you want to contribute.

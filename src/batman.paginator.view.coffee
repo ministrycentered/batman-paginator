@@ -9,7 +9,7 @@ class Batman.Paginator.View extends Batman.View
             @set('paginator.searchTerm', value)
         , 200
 
-  ['currentPage', 'totalPages', 'total', 'firstPage', 'lastPage'].forEach (prop) ->
+  ['currentPage', 'totalPages', 'total', 'firstPage', 'lastPage'].forEach (prop) =>
     # in case your version of batman.js doesn't have delegate...
     @accessor prop, ->  @get('paginator').get(prop)
 
@@ -20,3 +20,5 @@ class Batman.Paginator.View extends Batman.View
   @accessor 'isLoading', -> if @get('paginator.isLoading') == undefined then true else @get('paginator.isLoading')
   @accessor 'noItemsAtAll', -> !@get('searchTerm') and !@get('isLoading') and @get('totalPages') is 0
   @accessor 'noSearchResults', -> !!@get('searchTerm') and !@get('isLoading') and @get('totalPages') is 0
+
+Batman.App.PaginatorView = Batman.Paginator.View
