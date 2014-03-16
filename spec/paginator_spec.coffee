@@ -51,13 +51,21 @@ describe 'Batman.Paginator', ->
   describe "requestURL", ->
     it "adds queryParams to URL", ->
       queryPaginator = newPaginator()
-      queryPaginator.set('queryParams.q', "search")
+      queryPaginator.set('queryParams.key', "value")
       expect(queryPaginator.get('requestURL')).toMatch(/order_by=name(\+|%20| )asc/)
-      expect(queryPaginator.get('requestURL')).toMatch(/q=search/)
+      expect(queryPaginator.get('requestURL')).toMatch(/key=value/)
 
     it "adds offset and limit to URL", ->
       expect(newPaginator().get('requestURL')).toMatch(/limit=15/)
       expect(newPaginator().get('requestURL')).toMatch(/offset=0/)
+
+    it "customizes the search term param", ->
+      queryPaginator = newPaginator()
+      Batman.Paginator.SEARCH_TERM_PARAM = "query"
+      queryPaginator.set('searchTerm', "something")
+      expect(queryPaginator.get('requestURL')).toMatch(/query=something/)
+      # put it back:
+      Batman.Paginator.SEARCH_TERM_PARAM = "q"
 
   describe "results", ->
     it "returns a SubSet", ->

@@ -7,6 +7,8 @@
   Batman.Paginator = (function(_super) {
     __extends(Paginator, _super);
 
+    Paginator.SEARCH_TERM_PARAM = "q";
+
     Paginator.prototype._STATES = {
       LOADING: "loading",
       READY: "ready"
@@ -57,7 +59,7 @@
         return queryString += "&" + key + "=" + value;
       });
       if (this.get('searchTerm')) {
-        queryString += "&q=" + (this.get('searchTerm'));
+        queryString += "&" + this.constructor.SEARCH_TERM_PARAM + "=" + (this.get('searchTerm'));
       }
       return queryUrl = "" + (this.get('modelURL')) + "?" + queryString;
     });

@@ -1,4 +1,5 @@
 class Batman.Paginator extends Batman.Object
+  @SEARCH_TERM_PARAM = "q"
   _STATES:
     LOADING: "loading"
     READY: "ready"
@@ -32,7 +33,7 @@ class Batman.Paginator extends Batman.Object
     @get('queryParams').forEach (key, value) ->
       queryString += "&#{key}=#{value}"
     if @get('searchTerm')
-      queryString += "&q=#{@get('searchTerm')}"
+      queryString += "&#{@constructor.SEARCH_TERM_PARAM}=#{@get('searchTerm')}"
     queryUrl = "#{@get('modelURL')}?#{queryString}"
 
   @accessor 'searchRegExp', -> new RegExp("(^| )#{@get('searchTerm').replace(' ', '.* ')}", 'i')

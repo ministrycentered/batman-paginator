@@ -3,7 +3,7 @@
 A paginator for `Batman.Model`s that use `Batman.RestStorage`. It provides:
 
 - Lazy-loading records from the server
-- Tracking the memory map
+- Tracking the `loaded` set
 - A built-in view for working with the paginator
 - "Text search" by searching records in memory and firing a request to the server with the query
 - Page prefetching so nobody has to wait!
@@ -11,6 +11,10 @@ A paginator for `Batman.Model`s that use `Batman.RestStorage`. It provides:
 # Usage
 
 ## Include it in your project
+
+Get the source in [CoffeeScript](https://raw.github.com/ministrycentered/batman-paginator/master/dist/batman.paginator.coffee) or [JavaScript](https://raw.github.com/ministrycentered/batman-paginator/master/dist/batman.paginator.js) or [minified JavaScript](https://raw.github.com/ministrycentered/batman-paginator/master/dist/batman.paginator.min.js).
+
+If you're using Rails:
 
 ```coffee
 #= require ./path/to/batman.paginator
@@ -26,7 +30,12 @@ class App.Person extends Batman.Model
 
 ## Set up your API endpoint
 
-The paginator expects a response like this one:
+The paginator will send a request like this one:
+
+```
+GET "#{model.url}#{.json if needed}?offset=#{offset}&limit=#{limit}&#{serialized queryParams}"
+```
+And it expects a response like this one:
 
 ```json
 {
@@ -90,15 +99,41 @@ div data-view='PaginatorView'
       | Next >
 ```
 
-# More info
+# `new Batman.Paginator` Arguments
 
-### `searchBy`
+## `model` : Model
 
-If you include property names as `searchBy` when instantiating a paginator, it will filter itself by seeing if any of the `searchBy` properties begin with `searchTerm`. It will also fire a request with the search term as `q` in the query params.
+The `Batman.Model` subclass being paginated. `model.url` must be defined.
 
+## `index` : SetSort
+
+The index where the paginator will find already-loaded records. Defaults to `model.get('loaded').sortedBy('id')`. Pass a `Batman.SetSort` to make sure the client paginator sorts things the same way the server sorts them.
+
+## `limit` : Integer
+
+Items per page. Sent to the server as `limit`. Default `10`.
+
+## `offset`: Integer
+
+Initial offset (for starting at a page other than 0). Default `0`.
+
+## `searchBy`: Array
+
+If you include property names as `searchBy` when instantiating a paginator, it will filter itself by seeing if any of the `searchBy` properties begin with `searchTerm`.
+
+It will also fire a request with the search term as `Batman.Paginator.SEARCH_TERM_PARAM` (default value `q`) in the query params.
+
+## `queryParams` : Object
+
+A JS Object containing `param: "value"` pairs. They will be serialized in the paginator's AJAX requests. This is a nice place for `{order: "name asc"}`, for example. Defaults to `{}`.
+
+## `prefetch`
+
+If true, the paginator will fetch the _next_ page whenever a new page is displayed. For exampele, going to page 2 will cause the paginator to load page 3. Defaults to `false`.
 
 # To Do
 
+- publish on Bower
 - Proper API Docs
 - Extract `RestPaginator` and `MemoryPaginator`
 
