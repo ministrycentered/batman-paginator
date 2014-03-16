@@ -12,6 +12,7 @@ class Batman.Paginator extends Batman.Object
       limit: 10
       offset: 0
       prefetch: false
+      index: options.model.get('loaded.sortedBy.id')
     queryHash = {queryParams: new Batman.Hash(options.queryParams || {})}
 
     super(Batman.extend(defaults, options, queryHash))

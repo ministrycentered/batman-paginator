@@ -89,7 +89,6 @@ describe 'Batman.Paginator', ->
       TestModel.createFromJSON(id: 5, name: "doorknob")
       expect(paginator.get('results.length')).toEqual(2)
 
-
   describe "next", ->
     it "loads new records if currentPage < totalPages", ->
       paginator = newPaginator()
@@ -110,7 +109,6 @@ describe 'Batman.Paginator', ->
       paginator.next()
       expect(Batman.Request.requests).toEqual(1)
 
-
   describe "items get loaded by other means", ->
     beforeEach ->
       for name, idx in ["b", "c", "d"]
@@ -130,3 +128,11 @@ describe 'Batman.Paginator', ->
       lastRecord = TestModel.createFromJSON({name: "x", id: 51})
       expect(@paginator.get('index').has(lastRecord)).toBe(true) # it's in the index
       expect(@paginator.get('results').has(lastRecord)).toBe(false) # but not in this subset
+
+  describe 'index', ->
+    it 'defaults to loaded.sortedBy.id', ->
+      Batman.Request.setupMockedResponse()
+      options = {model: TestModel}
+      paginator = new Batman.Paginator(options)
+      expect(paginator.get('index')).toEqual(TestModel.get('loaded.sortedBy.id'))
+

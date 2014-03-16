@@ -28,7 +28,8 @@
       defaults = {
         limit: 10,
         offset: 0,
-        prefetch: false
+        prefetch: false,
+        index: options.model.get('loaded.sortedBy.id')
       };
       queryHash = {
         queryParams: new Batman.Hash(options.queryParams || {})
