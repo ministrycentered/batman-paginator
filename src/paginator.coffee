@@ -24,7 +24,7 @@ class Batman.Paginator extends Batman.Object
   @::observe 'requestURL', ->
     @_loadRecords()
 
-  # @property [String]  `model.url`, normalized by adding a leading `/` and a trailing `.json`, if necessary
+  # @property [String] `model.url`, normalized by adding a leading `/` and a trailing `.json`, if necessary
   @accessor 'modelURL', ->
     url = @get('model.url')
     if url.indexOf(".json") is -1
@@ -32,7 +32,7 @@ class Batman.Paginator extends Batman.Object
     url = Batman.Navigator.normalizePath("/", url) # make it absolute
     url
 
-  # @property [String]
+  # @property [String] The URL which is used to load data from the server
   @accessor 'requestURL', ->
     queryString = "offset=#{@get('offset')}&limit=#{@get('limit')}"
     @get('queryParams').forEach (key, value) ->
@@ -41,10 +41,9 @@ class Batman.Paginator extends Batman.Object
       queryString += "&#{@constructor.SEARCH_TERM_PARAM}=#{@get('searchTerm')}"
     queryUrl = "#{@get('modelURL')}?#{queryString}"
 
-  # @property [Integer] number
-  @property 'number'
-
-  @accessor 'searchRegExp', -> new RegExp("(^| )#{@get('searchTerm').replace(' ', '.* ')}", 'i')
+  # @property [RegExp] The regexp applied to records to determine whether they match `searchTerm`
+  @accessor 'searchRegExp',
+    get: -> new RegExp("(^| )#{@get('searchTerm').replace(' ', '.* ')}", 'i')
 
   @accessor 'results', ->
     if @get('searchTerm')
@@ -95,12 +94,13 @@ class Batman.Paginator extends Batman.Object
         if trackState
           @set('_state', @_STATES.READY)
 
+  # @nodoc
   _alreadyRequested: (url) ->
     !!Batman.Paginator._requestCache[url]
-
+  # @nodoc
   _cachedTotal: (url) ->
     Batman.Paginator._requestCache[url]
-
+  # @nodoc
   _handleJSON: (json, url) ->
     if json.total?
       @set 'total', json.total
@@ -143,5 +143,8 @@ class Batman.Paginator extends Batman.Object
 
   # @property [Object] requests already made by any paginator, in `url: totalResults` pairs.
   @_requestCache: {}
+
+  # Clears all cached requests made by all Batman.Paginator
+  # @return [Object]
   @clearRequestCache: -> @_requestCache = {}
 
