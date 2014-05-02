@@ -74,7 +74,7 @@ Also, a full test suite in `spec/`.
 
 - __Control the Paginator from the view__:
 
-You wrap your HTML in a `PaginatorView`:
+  You wrap your HTML in a `PaginatorView`:
 
   ```slim
   div data-view='PaginatorView'
@@ -108,15 +108,17 @@ You wrap your HTML in a `PaginatorView`:
 
 # API
 
-## `new Batman.Paginator` Arguments
+## Paginator Options
+
+pass to `new Batman.Paginator(options)`:
 
 - __`model` : Model__: The `Batman.Model` subclass being paginated. `model.url` must be defined.
 - __`index` : Set__ : The index where the paginator load records. Defaults to `model.get('loaded').sortedBy('id')`. Pass a `Batman.SetSort` to make sure the client paginator sorts things the same way the server sorts them.
 
   For example, for a paginator sorting by `score`, send `index: App.Player.get('loaded').sortedBy('score')`
 
-- __`limit` : Integer__:Items per page. Sent to the server as `limit`. Default `10`.
-- __`offset`: Integer__: Initial offset (for starting at a page other than 0). Default `0`.
+- __`limit` : Integer__: Items per page. Sent to the server as `limit`. Default `10`.
+- __`offset` : Integer__: Initial offset (for starting at a page other than 0). Default `0`.
 - __`queryParams` : Object__: A JS Object containing `param: "value"` pairs. They will be serialized in the paginator's AJAX requests. This is a nice place for `{order: "name asc"}`, for example. Defaults to `{}`.
 - __`prefetch` : Boolean__: If true, the paginator will fetch the _next_ page whenever a new page is displayed. For exampele, going to page 2 will cause the paginator to load page 3. Defaults to `false`.
 - __`searchBy`: Array of Strings__:
@@ -125,8 +127,9 @@ You wrap your HTML in a `PaginatorView`:
 
   It will also fire a request with the search term as `Batman.Paginator.SEARCH_TERM_PARAM` (default value `q`) in the query params.
 
-## `PaginatorView` accessors
+## PaginatorView accessors
 
+You can use these if you wrap HTML with `data-view='PaginatorView'`
 __values:__
 
 - `paginator` - Paginator object
