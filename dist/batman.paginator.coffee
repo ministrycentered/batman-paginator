@@ -8,7 +8,7 @@ class Batman.Paginator extends Batman.Object
   # @option [Integer] limit
   # @option [Integer] offset
   # @option [Boolean] prefetch
-  # @option [Batman.SetSort] index
+  # @option [Batman.SetSort] index The Batman.Set where loaded records will be added.
   constructor: (options={}) ->
     defaults =
       limit: 10
@@ -105,15 +105,18 @@ class Batman.Paginator extends Batman.Object
     else
       recordsJSON = json
     model = @get('model')
-    model.get('loaded').prevent('itemsWereAdded')
+    index = @get('index')
+    index.prevent('itemsWereAdded')
     modelPrimaryKey = model.get('primaryKey')
-    loadedIds = model.get('loaded').mapToProperty('id')
-    addedRecords = []
+    loadedIds = index.mapToProperty('id')
+    recordsToAdd = []
     for recordJSON in recordsJSON
       if recordsJSON[modelPrimaryKey] not in loadedIds
-        record = model.createFromJSON(recordJSON)
-        addedRecords.push(record)
-    model.get('loaded').allowAndFire('itemsWereAdded', addedRecords, null)
+        record = new model(recordJSON)
+        recordsToAdd.push(record)
+    # if anything actually added, fire the event:
+    if addedRecords = index.add(recordsToAdd...)
+      index.allowAndFire('itemsWereAdded', addedRecords, null)
 
   @accessor 'isLoading', -> @get('_state') is @_STATES.LOADING
   @accessor 'isReady', -> @get('_state') is @_STATES.READY
@@ -190,7 +193,7 @@ class Batman.SubSet extends Batman.SetProxy
   tracksAnyOf: (indexes) ->
     # is there any chance the SetSort wants these items?
     # return true if you're not sure.
-    return true if !indexes.length
+    return true if !indexes?.length
     min = Math.min(indexes...)
     max = Math.max(indexes...)
     return true if Batman.typeOf(min) != 'Number' or Batman.typeOf(max) != 'Number'

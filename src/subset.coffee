@@ -23,7 +23,7 @@ class Batman.SubSet extends Batman.SetProxy
   tracksAnyOf: (indexes) ->
     # is there any chance the SetSort wants these items?
     # return true if you're not sure.
-    return true if !indexes.length
+    return true if !indexes?.length
     min = Math.min(indexes...)
     max = Math.max(indexes...)
     return true if Batman.typeOf(min) != 'Number' or Batman.typeOf(max) != 'Number'

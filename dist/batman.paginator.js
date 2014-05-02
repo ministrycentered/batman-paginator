@@ -35,7 +35,7 @@
     Paginator.accessor('modelURL', function() {
       var url;
       url = this.get('model.url') || this.get('model.storageKey') || this.get('model.resourceName');
-      if (url.indexOf(".json") === -1) {
+      if (this.constructor.APPEND_JSON && url.indexOf(".json") === -1) {
         url += ".json";
       }
       url = Batman.Navigator.normalizePath("/", url);
@@ -170,7 +170,7 @@
     };
 
     Paginator.prototype._handleJSON = function(json, url) {
-      var addedRecords, loadedIds, model, modelPrimaryKey, record, recordJSON, recordsJSON, _i, _len, _ref;
+      var addedRecords, index, loadedIds, model, modelPrimaryKey, record, recordJSON, recordsJSON, recordsToAdd, _i, _len, _ref;
       if (json.total != null) {
         this.set('total', json.total);
         recordsJSON = json.records;
@@ -179,18 +179,21 @@
         recordsJSON = json;
       }
       model = this.get('model');
-      model.get('loaded').prevent('itemsWereAdded');
+      index = this.get('index');
+      index.prevent('itemsWereAdded');
       modelPrimaryKey = model.get('primaryKey');
-      loadedIds = model.get('loaded').mapToProperty('id');
-      addedRecords = [];
+      loadedIds = index.mapToProperty('id');
+      recordsToAdd = [];
       for (_i = 0, _len = recordsJSON.length; _i < _len; _i++) {
         recordJSON = recordsJSON[_i];
         if (_ref = recordsJSON[modelPrimaryKey], __indexOf.call(loadedIds, _ref) < 0) {
-          record = model.createFromJSON(recordJSON);
-          addedRecords.push(record);
+          record = new model(recordJSON);
+          recordsToAdd.push(record);
         }
       }
-      return model.get('loaded').allowAndFire('itemsWereAdded', addedRecords, null);
+      if (addedRecords = index.add.apply(index, recordsToAdd)) {
+        return index.allowAndFire('itemsWereAdded', addedRecords, null);
+      }
     };
 
     Paginator.accessor('isLoading', function() {
@@ -355,7 +358,7 @@
 
     SubSet.prototype.tracksAnyOf = function(indexes) {
       var max, min;
-      if (!indexes.length) {
+      if (!(indexes != null ? indexes.length : void 0)) {
         return true;
       }
       min = Math.min.apply(Math, indexes);

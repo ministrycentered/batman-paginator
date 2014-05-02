@@ -1,7 +1,3 @@
-class @TestModel extends Batman.Model
-  @resourceName: 'tests'
-  @url: "api/v1/tests"
-  @encode "name", "id"
 
 @resetCache = ->
   Batman.Paginator.clearRequestCache()
@@ -15,6 +11,12 @@ class @TestModel extends Batman.Model
   paginator
 
 describe 'Batman.Paginator', ->
+  beforeEach ->
+    class window.TestModel extends Batman.Model
+      @resourceName: 'tests'
+      @url: "api/v1/tests"
+      @encode "name", "id"
+
   describe 'prefetch', ->
     beforeEach ->
       @paginator = newPaginator(prefetch: true, limit: 3)
@@ -129,6 +131,7 @@ describe 'Batman.Paginator', ->
       expect(@paginator.get('results').has(firstRecord))
 
     it "maintains the sort of its #index", ->
+      firstRecord = TestModel.createFromJSON({name: "a", id: 51})
       firstResult = @paginator.get('results.first')
       expect(firstResult.get("name")).toBe("a")
 
@@ -143,4 +146,26 @@ describe 'Batman.Paginator', ->
       options = {model: TestModel}
       paginator = new Batman.Paginator(options)
       expect(paginator.get('index')).toEqual(TestModel.get('loaded.sortedBy.id'))
+
+    it 'loads records into a given set, not `loaded`', ->
+      Batman.Request.setupMockedResponse()
+      # mock pages one and two
+      Batman.Request.addMockedResponse 'GET', '/api/v1/tests.json?offset=0&limit=1', ->
+        {response: {total: 2, records: [{id: 1, name: "a"}]}, status: 200}
+      Batman.Request.addMockedResponse 'GET', '/api/v1/tests.json?offset=1&limit=1', ->
+        {response: {total: 2, records: [{id: 2, name: "b"}]}, status: 200}
+
+      recordSet = new Batman.Set
+      options = {model: TestModel, index: recordSet, limit: 1}
+      paginator = new Batman.Paginator(options)
+      expect(paginator.get('index')).toEqual(recordSet)
+
+      results = paginator.get('results')
+      expect(results.mapToProperty('name')).toEqual(['a'])
+      paginator.next()
+      expect(results.mapToProperty('name')).toEqual(['b'])
+      paginator.prev()
+      expect(results.mapToProperty('name')).toEqual(['a'])
+      expect(TestModel.get('loaded.length')).toEqual(0)
+
 
