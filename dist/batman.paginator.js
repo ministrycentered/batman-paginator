@@ -9,6 +9,8 @@
 
     Paginator.SEARCH_TERM_PARAM = "q";
 
+    Paginator.APPEND_JSON = true;
+
     function Paginator(options) {
       var defaults, queryHash;
       if (options == null) {

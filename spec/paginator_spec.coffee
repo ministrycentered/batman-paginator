@@ -58,6 +58,13 @@ describe 'Batman.Paginator', ->
       expect(TestModel.url).not.toMatch(/\.json/)
       expect(newPaginator().get('modelURL')).toMatch(/\.json/)
 
+    it "can not add .json to URL", ->
+      Batman.Paginator.APPEND_JSON = false
+      expect(TestModel.url).not.toMatch(/\.json/)
+      expect(newPaginator().get('modelURL')).not.toMatch(/\.json/)
+      # put it back
+      Batman.Paginator.APPEND_JSON = true
+
   describe "requestURL", ->
     it "adds queryParams to URL", ->
       queryPaginator = newPaginator()
