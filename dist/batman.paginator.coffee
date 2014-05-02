@@ -99,23 +99,21 @@ class Batman.Paginator extends Batman.Object
   _handleJSON: (json, url) ->
     if json.total?
       @set 'total', json.total
-      recordsJSON = json.records
       Batman.Paginator._requestCache[url] = json.total
-    else
-      recordsJSON = json
-    model = @get('model')
-    index = @get('index')
+
+    adapter = @get('adapter')
+    model   = @get('model')
+    index   = @get('index')
+
     index.prevent('itemsWereAdded')
-    modelPrimaryKey = model.get('primaryKey')
-    loadedIds = index.mapToProperty('id')
-    recordsToAdd = []
-    for recordJSON in recordsJSON
-      if recordsJSON[modelPrimaryKey] not in loadedIds
-        record = new model(recordJSON)
-        recordsToAdd.push(record)
-    # if anything actually added, fire the event:
-    if addedRecords = index.add(recordsToAdd...)
-      index.allowAndFire('itemsWereAdded', addedRecords, null)
+
+    namespace = @namespace || adapter.collectionJsonNamespace(model)
+    recordsJSON = adapter.extractFromNamespace(json, namespace)
+    records = @get('model')._makeOrFindRecordsFromData(recordsJSON)
+
+    index.add records...
+
+    index.allowAndFire('itemsWereAdded', records, null)
 
   @accessor 'isLoading', -> @get('_state') is @_STATES.LOADING
   @accessor 'isReady', -> @get('_state') is @_STATES.READY
