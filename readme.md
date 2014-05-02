@@ -113,7 +113,11 @@ Also, a full test suite in `spec/`.
 pass to `new Batman.Paginator(options)`:
 
 - __`model` : Model__: The `Batman.Model` subclass being paginated. `model.url` must be defined.
-- __`index` : Set__ : The index where the paginator load records. Defaults to `model.get('loaded').sortedBy('id')`. Pass a `Batman.SetSort` to make sure the client paginator sorts things the same way the server sorts them.
+- __`index` : Set__ :
+
+  The `Batman.Set` where the paginator will load records. If it's `Model.get('loaded')` (or a proxy of the `loaded` set), records loaded with the paginator will be added to the `loaded` set. Otherwise (eg, `index: new Batman.Set`), they won't be added to the `loaded` set.
+
+  Defaults to `model.get('loaded').sortedBy('id')`. Pass a `Batman.SetSort` to make sure the client paginator sorts things the same way the server sorts them.
 
   For example, for a paginator sorting by `score`, send `index: App.Player.get('loaded').sortedBy('score')`
 
@@ -129,7 +133,9 @@ pass to `new Batman.Paginator(options)`:
 
 ## PaginatorView accessors
 
-You can use these if you wrap HTML with `data-view='PaginatorView'`
+You can use these if you wrap HTML with `data-view='PaginatorView'`.
+
+
 __values:__
 
 - `paginator` - Paginator object
