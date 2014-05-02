@@ -1,7 +1,5 @@
 class Batman.Paginator extends Batman.Object
   @SEARCH_TERM_PARAM = "q"
-  # Set to false if you don't want to add .json at the end of URLs
-  @APPEND_JSON = true
 
   # Make a new paginator
   #
@@ -26,13 +24,12 @@ class Batman.Paginator extends Batman.Object
   @::observe 'requestURL', ->
     @_loadRecords()
 
-  # @property [String]  url for the collection, normalized by adding a leading `/` and a trailing `.json`, if necessary
+  @accessor 'adapter', ->
+    @get('model').prototype._batman.get('storage')
+
+  # @property [String] url for the collection, grabbed from the StorageAdapter
   @accessor 'modelURL', ->
-    url = @get('model.url') || @get('model.storageKey') || @get('model.resourceName')
-    if @constructor.APPEND_JSON && url.indexOf(".json") is -1
-      url += ".json"
-    url = Batman.Navigator.normalizePath("/", url) # make it absolute
-    url
+    @url || @get('adapter').urlForCollection(@get('model'), {})
 
   @accessor 'requestURL', ->
     queryString = "offset=#{@get('offset')}&limit=#{@get('limit')}"
