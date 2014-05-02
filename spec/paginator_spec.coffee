@@ -1,4 +1,5 @@
 class @TestModel extends Batman.Model
+  @resourceName: 'tests'
   @url: "api/v1/tests"
   @encode "name", "id"
 
@@ -41,6 +42,13 @@ describe 'Batman.Paginator', ->
       expect(Batman.Request.requests).toEqual(3)
 
   describe 'modelURL', ->
+    it "uses url", ->
+      expect(newPaginator().get('modelURL')).toEqual("/api/v1/tests.json")
+
+    it "uses resourceName", ->
+      delete TestModel.url
+      expect(newPaginator().get('modelURL')).toEqual("/tests.json")
+
     it "makes URL absolute if it isn't absolute", ->
       expect(TestModel.url).not.toMatch(/^\//)
       expect(newPaginator().get('modelURL')).toMatch(/^\//)

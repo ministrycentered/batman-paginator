@@ -9,17 +9,6 @@
 
     Paginator.SEARCH_TERM_PARAM = "q";
 
-    Paginator.prototype._STATES = {
-      LOADING: "loading",
-      READY: "ready"
-    };
-
-    Paginator._requestCache = {};
-
-    Paginator.clearRequestCache = function() {
-      return this._requestCache = {};
-    };
-
     function Paginator(options) {
       var defaults, queryHash;
       if (options == null) {
@@ -45,7 +34,7 @@
 
     Paginator.accessor('modelURL', function() {
       var url;
-      url = this.get('model.url');
+      url = this.get('model.url') || this.get('model.storageKey') || this.get('model.resourceName');
       if (url.indexOf(".json") === -1) {
         url += ".json";
       }
@@ -242,6 +231,17 @@
         this.set('offset', this.get('offset') - this.get('limit'));
         return this.resultSubSet.set('offset', this.get('offset'));
       }
+    };
+
+    Paginator.prototype._STATES = {
+      LOADING: "loading",
+      READY: "ready"
+    };
+
+    Paginator._requestCache = {};
+
+    Paginator.clearRequestCache = function() {
+      return this._requestCache = {};
     };
 
     return Paginator;

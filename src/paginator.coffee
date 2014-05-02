@@ -24,9 +24,9 @@ class Batman.Paginator extends Batman.Object
   @::observe 'requestURL', ->
     @_loadRecords()
 
-  # @property [String]  `model.url`, normalized by adding a leading `/` and a trailing `.json`, if necessary
+  # @property [String]  url for the collection, normalized by adding a leading `/` and a trailing `.json`, if necessary
   @accessor 'modelURL', ->
-    url = @get('model.url')
+    url = @get('model.url') || @get('model.storageKey') || @get('model.resourceName')
     if url.indexOf(".json") is -1
       url += ".json"
     url = Batman.Navigator.normalizePath("/", url) # make it absolute
