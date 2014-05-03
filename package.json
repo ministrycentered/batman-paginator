@@ -1,22 +1,25 @@
 {
   "name": "batman-paginator",
   "version": "0.1.0",
-  "author" : "Robert Mosolgo",
+  "author": "Robert Mosolgo",
   "engines": {
     "node": ">= 0.10"
   },
-  "keywords" : [
+  "keywords": [
     "batman.js"
   ],
-  "license" : "MIT",
+  "license": "MIT",
   "devDependencies": {
-    "karma": "0.10.9",
-    "coffee-script" : ">= 1.6.3",
-    "uglify-js" : ">= 2.4"
+    "coffee-script": ">= 1.6.3",
+    "karma": ">= 0.10",
+    "karma-chrome-launcher": "^0.1.3",
+    "karma-coffee-preprocessor": "~0.1",
+    "karma-jasmine": "~0.1.0",
+    "uglify-js": ">= 2.4"
   },
-  "scripts" : {
-    "test" : "./node_modules/.bin/karma start ./spec/support/config.coffee --single-run --browsers PhantomJS",
-    "spec" : "./node_modules/.bin/karma start ./spec/support/config.coffee",
-    "build" : "cat src/* > ./dist/batman.paginator.coffee && coffee -o ./dist -c ./dist/batman.paginator.coffee && uglifyjs ./dist/batman.paginator.js -o ./dist/batman.paginator.min.js"
+  "scripts": {
+    "test": "./node_modules/karma/bin/karma start ./spec/support/config.coffee --single-run --browsers PhantomJS",
+    "spec": "./node_modules/karma/bin/karma start ./spec/support/config.coffee",
+    "build": "cat src/* > ./dist/batman.paginator.coffee && coffee -o ./dist -c ./dist/batman.paginator.coffee && uglifyjs ./dist/batman.paginator.js -o ./dist/batman.paginator.min.js"
   }
 }

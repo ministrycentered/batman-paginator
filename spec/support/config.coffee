@@ -1,6 +1,14 @@
 module.exports = (config) ->
   config.set
     basePath: "../"
+    plugins: [
+      'karma-coffee-preprocessor',
+      'karma-jasmine',
+      'karma-chrome-launcher',
+    ]
+    preprocessors: {
+      '**/*.coffee': ['coffee']
+    }
     frameworks: ['jasmine']
     files: [
       'lib/batman.js'
