@@ -164,3 +164,10 @@ __functions:__
 # Contributing
 
 Please do! We're running this in production, so please report any issues and open a pull request if you want to contribute.
+
+For __tests__, you can run some npm scripts:
+
+- `npm run-script build` compiles the `/dist` files
+- `npm run-script spec` starts Karma
+
+Sorry, it's not a great workflow because you have to `build` whenever you make a change. I wrote this before I knew gulp.js :( and I haven't made the switch yet. An improvement to the testing process would be welcome!
