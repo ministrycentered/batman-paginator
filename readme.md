@@ -167,7 +167,8 @@ Please do! We're running this in production, so please report any issues and ope
 
 For development:
 
-```
+```bash
 $ npm install
+$ npm install gulp -g # I have to do that for some reason
 $ gulp # starts building & running tests
 ```
