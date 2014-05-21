@@ -101,8 +101,6 @@ class Batman.SubSet extends Batman.SetProxy
 
 class Batman.Paginator extends Batman.Object
   @SEARCH_TERM_PARAM = "q"
-  # Set to false if you don't want to add .json at the end of URLs
-  @APPEND_JSON = true
 
   # Make a new paginator
   #
@@ -127,13 +125,12 @@ class Batman.Paginator extends Batman.Object
   @::observe 'requestURL', ->
     @_loadRecords()
 
-  # @property [String]  url for the collection, normalized by adding a leading `/` and a trailing `.json`, if necessary
+  @accessor 'adapter', ->
+    @get('model').prototype._batman.get('storage')
+
+  # @property [String] url for the collection, grabbed from the StorageAdapter
   @accessor 'modelURL', ->
-    url = @get('model.url') || @get('model.storageKey') || @get('model.resourceName')
-    if @constructor.APPEND_JSON && url.indexOf(".json") is -1
-      url += ".json"
-    url = Batman.Navigator.normalizePath("/", url) # make it absolute
-    url
+    @url || @get('adapter').urlForCollection(@get('model'), {})
 
   @accessor 'requestURL', ->
     queryString = "offset=#{@get('offset')}&limit=#{@get('limit')}"
@@ -203,23 +200,21 @@ class Batman.Paginator extends Batman.Object
   _handleJSON: (json, url) ->
     if json.total?
       @set 'total', json.total
-      recordsJSON = json.records
       Batman.Paginator._requestCache[url] = json.total
-    else
-      recordsJSON = json
-    model = @get('model')
-    index = @get('index')
+
+    adapter = @get('adapter')
+    model   = @get('model')
+    index   = @get('index')
+
     index.prevent('itemsWereAdded')
-    modelPrimaryKey = model.get('primaryKey')
-    loadedIds = index.mapToProperty('id')
-    recordsToAdd = []
-    for recordJSON in recordsJSON
-      if recordsJSON[modelPrimaryKey] not in loadedIds
-        record = new model(recordJSON)
-        recordsToAdd.push(record)
-    # if anything actually added, fire the event:
-    if addedRecords = index.add(recordsToAdd...)
-      index.allowAndFire('itemsWereAdded', addedRecords, null)
+
+    namespace = @namespace || adapter.collectionJsonNamespace(model)
+    recordsJSON = adapter.extractFromNamespace(json, namespace)
+    records = @get('model')._makeOrFindRecordsFromData(recordsJSON)
+
+    index.add records...
+
+    index.allowAndFire('itemsWereAdded', records, null)
 
   @accessor 'isLoading', -> @get('_state') is @_STATES.LOADING
   @accessor 'isReady', -> @get('_state') is @_STATES.READY
