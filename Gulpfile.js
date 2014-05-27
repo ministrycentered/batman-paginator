@@ -27,4 +27,5 @@ gulp.task("spec", function(){
         configFile: './spec/support/config.coffee',
         action: 'watch'
       }))
+  return true
 })
