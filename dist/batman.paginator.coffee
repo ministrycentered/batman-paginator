@@ -220,8 +220,9 @@ class Batman.Paginator extends Batman.Object
     loadedIds = index.mapToProperty('id')
     recordsToAdd = []
     for recordJSON in recordsJSON
-      if recordsJSON[modelPrimaryKey] not in loadedIds
-        record = new model(recordJSON)
+      if recordJSON[modelPrimaryKey] not in loadedIds
+        record = new model
+        record._withoutDirtyTracking -> @fromJSON(recordJSON)
         recordsToAdd.push(record)
     # if anything actually added, fire the event:
     if addedRecords = index.add(recordsToAdd...)

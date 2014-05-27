@@ -360,8 +360,11 @@
       recordsToAdd = [];
       for (_i = 0, _len = recordsJSON.length; _i < _len; _i++) {
         recordJSON = recordsJSON[_i];
-        if (_ref = recordsJSON[modelPrimaryKey], __indexOf.call(loadedIds, _ref) < 0) {
-          record = new model(recordJSON);
+        if (_ref = recordJSON[modelPrimaryKey], __indexOf.call(loadedIds, _ref) < 0) {
+          record = new model;
+          record._withoutDirtyTracking(function() {
+            return this.fromJSON(recordJSON);
+          });
           recordsToAdd.push(record);
         }
       }

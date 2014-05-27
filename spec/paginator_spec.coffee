@@ -4,6 +4,7 @@
 
 @newPaginator = (options={})->
   Batman.Request.setupMockedResponse()
+  Batman.Paginator.clearRequestCache()
   index = TestModel.get('loaded.sortedBy.name')
   defaultOptions = {model: TestModel, limit: 15, index, searchBy: ['name'], queryParams: {order_by: "name asc"}}
   options = Batman.extend(defaultOptions, options)
@@ -159,31 +160,46 @@ describe 'Batman.Paginator', ->
       expect(@paginator.get('results').has(lastRecord)).toBe(false) # but not in this subset
 
   describe 'index', ->
+    beforeEach ->
+      @recordSet = new Batman.Set
+      @paginator = newPaginator(model: TestModel, index: @recordSet, limit: 2, searchBy: 'name', queryParams: {})
+
+      # mock pages one and two
+      Batman.Request.addMockedResponse 'GET', '/api/v1/tests.json?offset=0&limit=2', ->
+        {response: {total: 4, records: [{id: 1, name: "a"}, {id: 2, name: "b"}]}, status: 200}
+      Batman.Request.addMockedResponse 'GET', '/api/v1/tests.json?offset=2&limit=2', ->
+        {response: {total: 4, records: [{id: 3, name: "c"}, {id: 4, name: "d"}]}, status: 200}
+
+
     it 'defaults to loaded.sortedBy.id', ->
       Batman.Request.setupMockedResponse()
       options = {model: TestModel}
       paginator = new Batman.Paginator(options)
       expect(paginator.get('index')).toEqual(TestModel.get('loaded.sortedBy.id'))
 
-    it 'loads records into a given set, not `loaded`', ->
-      Batman.Request.setupMockedResponse()
-      # mock pages one and two
-      Batman.Request.addMockedResponse 'GET', '/api/v1/tests.json?offset=0&limit=1', ->
-        {response: {total: 2, records: [{id: 1, name: "a"}]}, status: 200}
-      Batman.Request.addMockedResponse 'GET', '/api/v1/tests.json?offset=1&limit=1', ->
-        {response: {total: 2, records: [{id: 2, name: "b"}]}, status: 200}
+    describe 'loading records into a given set, not `loaded`', ->
+      it 'specifies another set', ->
+        expect(@paginator.get('index')).toEqual(@recordSet)
 
-      recordSet = new Batman.Set
-      options = {model: TestModel, index: recordSet, limit: 1}
-      paginator = new Batman.Paginator(options)
-      expect(paginator.get('index')).toEqual(recordSet)
+      it 'loads them into the set', ->
+        results = @paginator.get('results')
+        expect(results.mapToProperty('name')).toEqual(['a', 'b'])
+        @paginator.next()
+        expect(results.mapToProperty('name')).toEqual(['c', 'd'])
+        @paginator.prev()
+        expect(results.mapToProperty('name')).toEqual(['a', 'b'])
+        expect(@recordSet.get('length')).toEqual(4)
+        expect(TestModel.get('loaded.length')).toEqual(0)
 
-      results = paginator.get('results')
-      expect(results.mapToProperty('name')).toEqual(['a'])
-      paginator.next()
-      expect(results.mapToProperty('name')).toEqual(['b'])
-      paginator.prev()
-      expect(results.mapToProperty('name')).toEqual(['a'])
-      expect(TestModel.get('loaded.length')).toEqual(0)
-
+      it 'doesnt load duplicates', ->
+        Batman.Request.addMockedResponse 'GET', '/api/v1/tests.json?offset=0&limit=2&q=b', ->
+          {response: {total: 4, records: [{id: 2, name: "b"}]}, status: 200}
+        results = @paginator.get('results')
+        expect(results.mapToProperty('name')).toEqual(['a', 'b'])
+        @paginator.next()
+        expect(results.mapToProperty('name')).toEqual(['c', 'd'])
+        @paginator.prev()
+        expect(results.mapToProperty('name')).toEqual(['a', 'b'])
+        @paginator.set('searchTerm', 'b')
+        expect(@recordSet.get('length')).toEqual(4)
 
