@@ -226,7 +226,10 @@
     });
 
     Paginator.accessor('searchRegExp', function() {
-      return new RegExp("(^| )" + (this.get('searchTerm').replace(' ', '.* ')), 'i');
+      var escapedString, searchString;
+      escapedString = this.get('searchTerm').replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+      searchString = escapedString.replace(' ', '.* ');
+      return new RegExp("(^| )" + searchString, 'i');
     });
 
     Paginator.accessor('results', function() {

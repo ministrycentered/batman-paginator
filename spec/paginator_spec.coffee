@@ -98,15 +98,24 @@ describe 'Batman.Paginator', ->
       paginator.get('results')
       expect(Batman.Request.requests).toEqual(1)
 
-    it "filters by searchTerm", ->
-      paginator = newPaginator()
-      for name, idx in ["boat", "crayfish", "dog"]
-        m = TestModel.createFromJSON({id: idx, name: name})
-      paginator.set('searchTerm', 'do')
-      expect(paginator.get('results.length')).toEqual(1)
-      expect(paginator.get('results.first.name')).toEqual('dog')
-      TestModel.createFromJSON(id: 5, name: "doorknob")
-      expect(paginator.get('results.length')).toEqual(2)
+    describe 'searching', ->
+      beforeEach ->
+        for name, idx in ["boat", "crayfish", "dog"]
+          m = TestModel.createFromJSON({id: idx, name: name})
+
+      it "filters by searchTerm", ->
+        paginator = newPaginator()
+        paginator.set('searchTerm', 'do')
+        expect(paginator.get('results.length')).toEqual(1)
+        expect(paginator.get('results.first.name')).toEqual('dog')
+        TestModel.createFromJSON(id: 5, name: "doorknob")
+        expect(paginator.get('results.length')).toEqual(2)
+
+      it 'cleans yucky search terms', ->
+        paginator = newPaginator()
+        paginator.set("searchTerm", 'do\\')
+        expect( -> paginator.get('searchRegExp') ).not.toThrow()
+
 
   describe "next", ->
     it "loads new records if currentPage < totalPages", ->

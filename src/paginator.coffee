@@ -45,7 +45,10 @@ class Batman.Paginator extends Batman.Object
       queryString += "&#{@constructor.SEARCH_TERM_PARAM}=#{@get('searchTerm')}"
     queryUrl = "#{@get('modelURL')}?#{queryString}"
 
-  @accessor 'searchRegExp', -> new RegExp("(^| )#{@get('searchTerm').replace(' ', '.* ')}", 'i')
+  @accessor 'searchRegExp', ->
+    escapedString = @get('searchTerm').replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&")
+    searchString = escapedString.replace(' ', '.* ')
+    new RegExp("(^| )#{searchString}", 'i')
 
   @accessor 'results', ->
     if @get('searchTerm')
