@@ -127,12 +127,15 @@ class Batman.Paginator extends Batman.Object
   @::observe 'requestURL', ->
     @_loadRecords()
 
-  # @property [String]  url for the collection, normalized by adding a leading `/` and a trailing `.json`, if necessary
+  # storage adapter instance for this model
+  @accessor 'adapter', ->
+    @get('model').prototype._batman.get('storage')
+
+  # @property [String]  url for the collection
   @accessor 'modelURL', ->
-    url = @get('model.url') || @get('model.storageKey') || @get('model.resourceName')
-    if @constructor.APPEND_JSON && url.indexOf(".json") is -1
+    url = @url || @get('adapter').urlForCollection(@get('model'), {})
+    if @constructor.APPEND_JSON and url.indexOf(".json") is -1
       url += ".json"
-    url = Batman.Navigator.normalizePath("/", url) # make it absolute
     url
 
   @accessor 'requestURL', ->

@@ -200,13 +200,16 @@
       return this._loadRecords();
     });
 
+    Paginator.accessor('adapter', function() {
+      return this.get('model').prototype._batman.get('storage');
+    });
+
     Paginator.accessor('modelURL', function() {
       var url;
-      url = this.get('model.url') || this.get('model.storageKey') || this.get('model.resourceName');
+      url = this.url || this.get('adapter').urlForCollection(this.get('model'), {});
       if (this.constructor.APPEND_JSON && url.indexOf(".json") === -1) {
         url += ".json";
       }
-      url = Batman.Navigator.normalizePath("/", url);
       return url;
     });
 

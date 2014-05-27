@@ -32,7 +32,10 @@ class Batman.Paginator extends Batman.Object
 
   # @property [String]  url for the collection
   @accessor 'modelURL', ->
-    @url || @get('adapter').urlForCollection(@get('model'), {})
+    url = @url || @get('adapter').urlForCollection(@get('model'), {})
+    if @constructor.APPEND_JSON and url.indexOf(".json") is -1
+      url += ".json"
+    url
 
   @accessor 'requestURL', ->
     queryString = "offset=#{@get('offset')}&limit=#{@get('limit')}"

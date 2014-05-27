@@ -16,6 +16,7 @@ describe 'Batman.Paginator', ->
       @resourceName: 'tests'
       @url: "api/v1/tests"
       @encode "name", "id"
+      @persist Batman.RestStorage
 
   describe 'prefetch', ->
     beforeEach ->
@@ -54,6 +55,7 @@ describe 'Batman.Paginator', ->
     it "makes URL absolute if it isn't absolute", ->
       expect(TestModel.url).not.toMatch(/^\//)
       expect(newPaginator().get('modelURL')).toMatch(/^\//)
+
     it "adds .json to URL if isn't present", ->
       expect(TestModel.url).not.toMatch(/\.json/)
       expect(newPaginator().get('modelURL')).toMatch(/\.json/)
